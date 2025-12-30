@@ -1,0 +1,16 @@
+Write queries to retrieve Data
+
+Query 1: Retrieve all tasks ordered by their start date
+Query 2: Retrieve the number of tasks for each project, ordered by the number of tasks in descending order
+Query 3: Retrieve the total number of tasks and total budget for projects, ordered by total budget.
+Query 4: Retrieve all projects with a status of 'In Progress' and a budget between $10,000 and $50,000.
+Query 5: Retrieve all tasks with a start date in 2024 and a status of 'Completed'
+Query 6: Retrieve all tasks with a due date in the next month and a status of 'Pending'
+Query 7: Retrieve all tasks that belong to the 'Website Redesign' project and have a high priority
+Query 8: Retrieve projects that have at least one task that is overdue (i.e., DueDate is in the past and Status is not 'Completed', 
+Note: Use Sub Query)
+Query 9: Retrieve tasks that belong to the most recent project started (i.e., the project with the latest StartDate)
+Query 10: Retrieve all projects that have both tasks with 'High' priority and tasks with 'Low' priority (Note: Use Subquery). 
+Query 11: Retrieve all tasks where the task name starts with 'Design'.
+Query 12: Retrieve tasks where the task name contains 'Review' but does not start with 'Pre':
+Query 13: Retrieve tasks where the task name contains any letter from 'A' to 'M' followed by exactly three characters.
