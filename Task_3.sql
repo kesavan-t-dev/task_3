@@ -135,5 +135,19 @@ WHERE
     AND YEAR(starts_date) = 2025;
 GO
 
--- QUery 6: Retrieve all tasks with a due date in the next month and a status of 'Pending'
-
+-- Query 6: Retrieve all tasks with a due date in the next month and a status of 'Pending'
+SELECT 
+    task_id,
+    task_name,
+    descriptions,
+    starts_date,
+    due_date,
+    prioritys,
+    statuss
+FROM 
+    task
+WHERE 
+    statuss = 'Pending'
+    AND YEAR(due_date) = 2025 
+ORDER BY 
+    due_date ASC;
