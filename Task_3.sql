@@ -151,3 +151,41 @@ WHERE
     AND YEAR(due_date) = 2025 
 ORDER BY 
     due_date ASC;
+
+ -- Query 7 :Retrieve all tasks that belong to the 'Website Redesign' project and have a high priority
+ SELECT 
+    task.task_name,
+    task.starts_date,
+    task.due_date,
+    task.prioritys,
+    task.statuss
+FROM 
+    task 
+INNER JOIN 
+    project 
+    ON task.project_id = project.project_id
+WHERE 
+    project.project_name = 'Website Redesign'
+    AND task.prioritys = 'High'
+ORDER BY 
+    task.due_date ASC;
+
+-- Query 8: Retrieve projects that have at least one task that is overdue 
+SELECT 
+    project_id,
+    project_name,
+    starts_date,
+    end_date,
+    budget,
+    statuss
+FROM 
+    project
+WHERE 
+    project_id IN (
+        SELECT DISTINCT project_id
+        FROM task
+        WHERE 
+            due_date < GETDATE()             
+    )
+ORDER BY 
+    project_name;
