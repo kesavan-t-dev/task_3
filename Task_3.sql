@@ -171,6 +171,9 @@ ORDER BY
     task.due_date ASC;
 
 -- Query 8: Retrieve projects that have at least one task that is overdue 
+
+-- small subquery function to understand subquery
+
 SELECT 
     project_id,
     project_name,
@@ -189,3 +192,5 @@ WHERE
     )
 ORDER BY 
     project_name;
+
+
