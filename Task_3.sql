@@ -193,4 +193,83 @@ WHERE
 ORDER BY 
     project_name;
 
+--Query 9: Retrieve tasks that belong to the most recent project started 
+SELECT 
+    t.task_id,
+    t.task_name,
+    t.starts_date,
+    t.due_date,
+    t.prioritys,
+    t.statuss
+FROM 
+    task t
+WHERE 
+    t.project_id = (
+        SELECT TOP 1 project_id
+        FROM project
+        ORDER BY starts_date DESC
+    );
+-- Query 10: Retrieve all projects that have both tasks with 'High' priority and tasks with 'Low' priority
+SELECT 
+    project_id,
+    project_name,
+    starts_date,
+    end_date,
+    budget,
+    statuss
+FROM 
+    project
+WHERE 
+    project_id IN (
+        SELECT project_id
+        FROM task
+        WHERE prioritys = 'High'
+    )
+AND 
+    project_id IN (
+        SELECT project_id
+        FROM task
+        WHERE prioritys = 'Low'
+    );
+-- Query 11: Retrieve all tasks where the task name starts with 'Design'.
+SELECT 
+    task_id,
+    task_name,
+    descriptions,
+    starts_date,
+    due_date,
+    prioritys,
+    statuss
+FROM 
+    task
+WHERE 
+    task_name LIKE 'Design%';
+-- Query 12: Retrieve tasks where the task name contains 'Review' but does not start with 'Pre':
+SELECT 
+    task_id,
+    task_name,
+    descriptions,
+    starts_date,
+    due_date,
+    prioritys,
+    statuss
+FROM 
+    task
+WHERE 
+    task_name LIKE '%Review%'
+    AND task_name NOT LIKE 'Pre%';
 
+
+-- Query 13: Retrieve tasks where the task name contains any letter from 'A' to 'M' followed by exactly three characters.
+SELECT 
+    task_id,
+    task_name,
+    descriptions,
+    starts_date,
+    due_date,
+    prioritys,
+    statuss
+FROM 
+    task
+WHERE 
+    task_name LIKE '%[A-M]___%';
