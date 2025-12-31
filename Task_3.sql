@@ -215,7 +215,8 @@ SELECT *
 FROM project
 
 -- Query 10: Retrieve all projects that have both tasks with 'High' priority and tasks with 'Low' priority
-SELECT p.project_id,
+SELECT 
+       p.project_id,
        p.project_name,
        t.task_id,
        t.task_name,
@@ -246,14 +247,14 @@ WHERE p.project_id IN (
     SELECT project_id as id
     FROM task
     WHERE prioritys IN ('High', 'medium')         
-    GROUP BY project_id
+    GROUP BY p.project_id
     HAVING COUNT(DISTINCT prioritys) = 2        
 )
 ORDER BY p.project_id, t.prioritys, t.task_id;
 
 
 -- To show the project table has the high & low priority
-SELECT 
+SELECT DISTINCT
     sub.project_id,
     sub.project_name,
     sub.prioritys
@@ -266,7 +267,6 @@ FROM (
     JOIN task t 
         ON p.project_id = t.project_id
     WHERE t.prioritys IN ('High', 'Low')
-    GROUP BY p.project_id, p.project_name, t.prioritys
 ) AS sub
 ORDER BY sub.project_id, sub.prioritys;
 
