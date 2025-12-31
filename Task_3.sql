@@ -61,14 +61,15 @@ VALUES
     ('Financial Statements', 'Preparing financial statements for the annual report', '2025-04-02', '2025-07-15', 'High', 'In Progress', 4),
     ('Final Review', 'Final review and submission of the annual report', '2025-07-16', '2025-12-15', 'High', 'Pending', 4),
     ('Client Feedback Incorporation', 'Incorporating feedback from the client into the project', '2025-02-01', '2025-03-15', 'Medium', 'In Progress', 1),
-    ('Launch Preparation', 'Preparing for the official launch of the mobile app', '2025-06-01', '2025-07-01', 'High', 'Pending', 2),
-    ('Initial Design 2', 'Design phase for the new website (second iteration)', '2025-12-31', '2026-04-28', 'High', 'Completed', 1),
-    ('Extra Low Priority Task', 'Test task for query 10', '2025-05-01', '2025-05-10', 'Low', 'Pending', 1);
+    ('Launch Preparation', 'Preparing for the official launch of the mobile app', '2025-06-01', '2025-07-01', 'High', 'Pending', 2);
+    
+    
 
 --Display Output;
 SELECT *
 FROM project
 GO
+
 
 SELECT *
 FROM task
@@ -136,21 +137,14 @@ WHERE
 GO
 
 -- Query 6: Retrieve all tasks with a due date in the next month and a status of 'Pending'
-SELECT 
-    task_id,
-    task_name,
-    descriptions,
-    starts_date,
-    due_date,
-    prioritys,
-    statuss
-FROM 
-    task
-WHERE 
-    statuss = 'Pending'
-    AND YEAR(due_date) = 2025 
-ORDER BY 
-    due_date ASC;
+SELECT *
+FROM task
+WHERE statuss = 'Pending'
+  AND 
+    due_date >= DATEADD(DAY, 1, EOMONTH(GETDATE()))  
+  AND 
+    due_date <= EOMONTH(DATEADD(MONTH, 1, GETDATE())); 
+
 
  -- Query 7 :Retrieve all tasks that belong task. the 'Website Redesign' project and have a high priority
  SELECT 
@@ -225,22 +219,56 @@ SELECT p.project_id,
        p.project_name,
        t.task_id,
        t.task_name,
-       t.prioritys,
-       t.statuss
+       t.prioritys
 FROM project p
-JOIN task t
+JOIN task t 
     ON p.project_id = t.project_id
 WHERE p.project_id IN (
-    SELECT project_id
+    SELECT project_id as id
     FROM task
-    WHERE prioritys IN ('High', 'Low')
+    WHERE prioritys IN ('High', 'low')         
     GROUP BY project_id
-    HAVING COUNT(DISTINCT prioritys) = 2
+    HAVING COUNT(DISTINCT prioritys) = 2        
 )
-AND t.prioritys IN ('High', 'Low') 
-ORDER BY p.project_id, t.prioritys;
+ORDER BY p.project_id, t.prioritys, t.task_id;
 
 
+-- projects that have both tasks with high and medium priority
+SELECT p.project_id,
+       p.project_name,
+       t.task_id,
+       t.task_name,
+       t.prioritys
+FROM project p
+JOIN task t 
+    ON p.project_id = t.project_id
+WHERE p.project_id IN (
+    SELECT project_id as id
+    FROM task
+    WHERE prioritys IN ('High', 'medium')         
+    GROUP BY project_id
+    HAVING COUNT(DISTINCT prioritys) = 2        
+)
+ORDER BY p.project_id, t.prioritys, t.task_id;
+
+
+-- To show the project table has the high & low priority
+SELECT 
+    sub.project_id,
+    sub.project_name,
+    sub.prioritys
+FROM (
+    SELECT 
+        p.project_id,
+        p.project_name,
+        t.prioritys AS prioritys
+    FROM project p
+    JOIN task t 
+        ON p.project_id = t.project_id
+    WHERE t.prioritys IN ('High', 'Low')
+    GROUP BY p.project_id, p.project_name, t.prioritys
+) AS sub
+ORDER BY sub.project_id, sub.prioritys;
 
 -- Query 11: Retrieve all tasks where the task name starts with 'Design'.
 SELECT *
