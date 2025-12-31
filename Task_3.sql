@@ -31,8 +31,6 @@ VALUES
     ('Annual Report Preparation', '2025-04-01', '2025-12-31', 12000.00, 'In Progress')
 GO
 
-DROP table project
-
 --task table creation
 CREATE TABLE task(
 	task_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -85,10 +83,10 @@ GO
 
 -- Query 2: Count tasks per project
 SELECT 
-    p.project_name,
+    project.project_name,
     COUNT(task.task_id) AS total_tasks
 FROM 
-    project p LEFT JOIN task
+    project  LEFT JOIN task
     ON project.project_id = task.project_id
 GROUP BY 
     project.project_name
@@ -204,8 +202,8 @@ SELECT task.task_id,
        task.due_date,
        task.prioritys,
        task.statuss,
-       p.project_name,
-       p.starts_date AS project_start
+       project.project_name,
+       project.starts_date AS project_start
 FROM 
     task task
 JOIN project  
