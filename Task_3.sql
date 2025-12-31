@@ -172,7 +172,6 @@ ORDER BY
 
 -- Query 8: Retrieve projects that have at least one task that is overdue 
 
--- small subquery function to understand subquery
 
 SELECT 
     project_id,
