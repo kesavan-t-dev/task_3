@@ -1,6 +1,6 @@
---DATABASE CREATION
-CREATE DATABASE kesavan_db
-GO
+----DATABASE CREATION
+--CREATE DATABASE kesavan_db
+--GO
 
 --USE DATABASE
 use kesavan_db
@@ -31,7 +31,7 @@ VALUES
     ('Annual Report Preparation', '2025-04-01', '2025-12-31', 12000.00, 'In Progress')
 GO
 
-
+DROP table project
 
 --task table creation
 CREATE TABLE task(
@@ -63,7 +63,9 @@ VALUES
     ('Financial Statements', 'Preparing financial statements for the annual report', '2025-04-02', '2025-07-15', 'High', 'In Progress', 4),
     ('Final Review', 'Final review and submission of the annual report', '2025-07-16', '2025-12-15', 'High', 'Pending', 4),
     ('Client Feedback Incorporation', 'Incorporating feedback from the client into the project', '2025-02-01', '2025-03-15', 'Medium', 'In Progress', 1),
-    ('Launch Preparation', 'Preparing for the official launch of the mobile app', '2025-06-01', '2025-07-01', 'High', 'Pending', 2);
+    ('Launch Preparation', 'Preparing for the official launch of the mobile app', '2025-06-01', '2025-07-01', 'High', 'Pending', 2),
+    ('Initial Design 2', 'Design phase for the new website (second iteration)', '2025-12-31', '2026-04-28', 'High', 'Completed', 1);
+    ('Extra Low Priority Task', 'Test task for query 10', '2025-05-01', '2025-05-10', 'Low', 'Pending', 1);
 
 --Display Output;
 SELECT *
@@ -83,10 +85,10 @@ GO
 
 -- Query 2: Count tasks per project
 SELECT 
-    project.project_name,
+    p.project_name,
     COUNT(task.task_id) AS total_tasks
 FROM 
-    project LEFT JOIN task
+    project p LEFT JOIN task
     ON project.project_id = task.project_id
 GROUP BY 
     project.project_name
@@ -152,7 +154,7 @@ WHERE
 ORDER BY 
     due_date ASC;
 
- -- Query 7 :Retrieve all tasks that belong to the 'Website Redesign' project and have a high priority
+ -- Query 7 :Retrieve all tasks that belong task. the 'Website Redesign' project and have a high priority
  SELECT 
     task.task_name,
     task.starts_date,
@@ -170,8 +172,8 @@ WHERE
 ORDER BY 
     task.due_date ASC;
 
--- Query 8: Retrieve projects that have at least one task that is overdue 
 
+-- Query 8: Retrieve projects that have at least one task that is overdue using subqueries
 
 SELECT 
     project_id,
@@ -192,83 +194,71 @@ WHERE
 ORDER BY 
     project_name;
 
---Query 9: Retrieve tasks that belong to the most recent project started 
-SELECT 
-    t.task_id,
-    t.task_name,
-    t.starts_date,
-    t.due_date,
-    t.prioritys,
-    t.statuss
+--Query 9: Retrieve tasks that belong task. the most recent project started 
+
+
+SELECT task.task_id,
+       task.task_name,
+       task.descriptions,
+       task.starts_date,
+       task.due_date,
+       task.prioritys,
+       task.statuss,
+       p.project_name,
+       p.starts_date AS project_start
 FROM 
-    task t
-WHERE 
-    t.project_id = (
-        SELECT TOP 1 project_id
-        FROM project
-        ORDER BY starts_date DESC
-    );
+    task task
+JOIN project  
+ON task.project_id = project.project_id
+WHERE project.starts_date = (
+    SELECT MAX(starts_date)
+    FROM project
+);
+
+--DISPLAY the two table
+SELECT *
+FROM task
+GO
+SELECT * 
+FROM project
+
 -- Query 10: Retrieve all projects that have both tasks with 'High' priority and tasks with 'Low' priority
-SELECT 
-    project_id,
-    project_name,
-    starts_date,
-    end_date,
-    budget,
-    statuss
-FROM 
-    project
-WHERE 
-    project_id IN (
-        SELECT project_id
-        FROM task
-        WHERE prioritys = 'High'
-    )
-AND 
-    project_id IN (
-        SELECT project_id
-        FROM task
-        WHERE prioritys = 'Low'
-    );
+SELECT project.project_id,
+       project.project_name,
+       task.task_id,
+       task.task_name,
+       task.prioritys,
+       task.statuss
+FROM project
+JOIN task task
+    ON project.project_id = task.project_id
+WHERE project.project_id IN (
+    SELECT project_id
+    FROM task
+    WHERE prioritys IN ('High', 'Low')
+    GROUP BY project_id
+    HAVING COUNT(DISTINCT prioritys) = 2
+)
+AND task.prioritys IN ('High', 'Low') 
+ORDER BY project.project_id, task.prioritys;
+
+
+
 -- Query 11: Retrieve all tasks where the task name starts with 'Design'.
-SELECT 
-    task_id,
-    task_name,
-    descriptions,
-    starts_date,
-    due_date,
-    prioritys,
-    statuss
-FROM 
-    task
-WHERE 
-    task_name LIKE 'Design%';
+SELECT *
+FROM task
+WHERE task_name LIKE 'Design%';
+
+
 -- Query 12: Retrieve tasks where the task name contains 'Review' but does not start with 'Pre':
-SELECT 
-    task_id,
-    task_name,
-    descriptions,
-    starts_date,
-    due_date,
-    prioritys,
-    statuss
-FROM 
-    task
-WHERE 
-    task_name LIKE '%Review%'
-    AND task_name NOT LIKE 'Pre%';
+SELECT *
+FROM task
+WHERE task_name LIKE '%Review%'   
+  AND task_name NOT LIKE 'Pre%';  
 
 
--- Query 13: Retrieve tasks where the task name contains any letter from 'A' to 'M' followed by exactly three characters.
-SELECT 
-    task_id,
-    task_name,
-    descriptions,
-    starts_date,
-    due_date,
-    prioritys,
-    statuss
-FROM 
-    task
-WHERE 
-    task_name LIKE '%[A-M]___%';
+
+-- Query 13: Retrieve tasks where the task name contains any letter from 'A' task. 'M' followed by exactly three characters.
+SELECT *
+FROM task
+WHERE task_name LIKE '[A-M]___%';
