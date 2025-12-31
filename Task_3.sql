@@ -247,7 +247,7 @@ WHERE p.project_id IN (
     SELECT project_id as id
     FROM task
     WHERE prioritys IN ('High', 'medium')         
-    GROUP BY p.project_id
+    GROUP BY project_id
     HAVING COUNT(DISTINCT prioritys) = 2        
 )
 ORDER BY p.project_id, t.prioritys, t.task_id;
