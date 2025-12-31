@@ -62,7 +62,7 @@ VALUES
     ('Final Review', 'Final review and submission of the annual report', '2025-07-16', '2025-12-15', 'High', 'Pending', 4),
     ('Client Feedback Incorporation', 'Incorporating feedback from the client into the project', '2025-02-01', '2025-03-15', 'Medium', 'In Progress', 1),
     ('Launch Preparation', 'Preparing for the official launch of the mobile app', '2025-06-01', '2025-07-01', 'High', 'Pending', 2),
-    ('Initial Design 2', 'Design phase for the new website (second iteration)', '2025-12-31', '2026-04-28', 'High', 'Completed', 1);
+    ('Initial Design 2', 'Design phase for the new website (second iteration)', '2025-12-31', '2026-04-28', 'High', 'Completed', 1),
     ('Extra Low Priority Task', 'Test task for query 10', '2025-05-01', '2025-05-10', 'Low', 'Pending', 1);
 
 --Display Output;
@@ -83,27 +83,27 @@ GO
 
 -- Query 2: Count tasks per project
 SELECT 
-    project.project_name,
-    COUNT(task.task_id) AS total_tasks
+    a.project_name,
+    COUNT(t.task_id) AS total_tasks
 FROM 
-    project  LEFT JOIN task
-    ON project.project_id = task.project_id
+    project a LEFT JOIN task  t
+    ON a.project_id = t.project_id
 GROUP BY 
-    project.project_name
-ORDER BY 
+    a.project_name
+ORDER BY
     total_tasks DESC;
 
 -- Query 3: total number of task, budget for projects, order by total budget
 
 SELECT 
-    project.project_name,
-    COUNT(task.task_id) AS total_tasks,
-    SUM(project.budget) AS total_budget
+    p.project_name,
+    COUNT(t.task_id) AS total_tasks,
+    SUM(p.budget) AS total_budget
 FROM 
-    project LEFT JOIN task
-    ON project.project_id = task.project_id
+    project P LEFT JOIN task t
+    ON P.project_id = t.project_id
 GROUP BY 
-    project.project_name
+    p.project_name
 ORDER BY 
     total_budget;
 
@@ -154,21 +154,21 @@ ORDER BY
 
  -- Query 7 :Retrieve all tasks that belong task. the 'Website Redesign' project and have a high priority
  SELECT 
-    task.task_name,
-    task.starts_date,
-    task.due_date,
-    task.prioritys,
-    task.statuss
+    t.task_name,
+    t.starts_date,
+    t.due_date,
+    t.prioritys,
+    t.statuss
 FROM 
-    task 
+    task t
 INNER JOIN 
-    project 
-    ON task.project_id = project.project_id
+    project p
+    ON t.project_id = p.project_id
 WHERE 
-    project.project_name = 'Website Redesign'
-    AND task.prioritys = 'High'
+    p.project_name = 'Website Redesign'
+    AND t.prioritys = 'High'
 ORDER BY 
-    task.due_date ASC;
+    t.due_date ASC;
 
 
 -- Query 8: Retrieve projects that have at least one task that is overdue using subqueries
@@ -195,20 +195,20 @@ ORDER BY
 --Query 9: Retrieve tasks that belong task. the most recent project started 
 
 
-SELECT task.task_id,
-       task.task_name,
-       task.descriptions,
-       task.starts_date,
-       task.due_date,
-       task.prioritys,
-       task.statuss,
-       project.project_name,
-       project.starts_date AS project_start
+SELECT t.task_id,
+       t.task_name,
+       t.descriptions,
+       t.starts_date,
+       t.due_date,
+       t.prioritys,
+       t.statuss,
+       p.project_name,
+       p.starts_date AS project_start
 FROM 
-    task task
-JOIN project  
-ON task.project_id = project.project_id
-WHERE project.starts_date = (
+    task t
+JOIN project p
+ON t.project_id = p.project_id
+WHERE p.starts_date = (
     SELECT MAX(starts_date)
     FROM project
 );
@@ -221,24 +221,24 @@ SELECT *
 FROM project
 
 -- Query 10: Retrieve all projects that have both tasks with 'High' priority and tasks with 'Low' priority
-SELECT project.project_id,
-       project.project_name,
-       task.task_id,
-       task.task_name,
-       task.prioritys,
-       task.statuss
-FROM project
-JOIN task task
-    ON project.project_id = task.project_id
-WHERE project.project_id IN (
+SELECT p.project_id,
+       p.project_name,
+       t.task_id,
+       t.task_name,
+       t.prioritys,
+       t.statuss
+FROM project p
+JOIN task t
+    ON p.project_id = t.project_id
+WHERE p.project_id IN (
     SELECT project_id
     FROM task
     WHERE prioritys IN ('High', 'Low')
     GROUP BY project_id
     HAVING COUNT(DISTINCT prioritys) = 2
 )
-AND task.prioritys IN ('High', 'Low') 
-ORDER BY project.project_id, task.prioritys;
+AND t.prioritys IN ('High', 'Low') 
+ORDER BY p.project_id, t.prioritys;
 
 
 
